@@ -39,5 +39,8 @@ func main() {
 	r.GET("/sets", rest.HandleAllSets)
 	r.GET("/sets/:id", rest.HandleSingleSet)
 	r.GET("/sets/:id/cards", rest.HandleCardsForSet)
+	r.GET("/users", func(c *gin.Context) {
+		rest.HandleAllUsers(c, db)
+	})
 	r.Run(":8082")
 }
