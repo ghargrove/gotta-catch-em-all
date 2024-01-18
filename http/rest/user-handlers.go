@@ -22,7 +22,7 @@ func HandleAllUsers(c *gin.Context, db *sqlx.DB) {
 
 	// Map the values in pointers
 	var users []*User
-	for _, user := range u {
+	for _, user := range result {
 		users = append(users, &user)
 	}
 
