@@ -54,5 +54,8 @@ func main() {
 	r.GET("/api/users", func(c *gin.Context) {
 		rest.HandleAllUsers(c, db)
 	})
+	r.GET("/api/users/:id", func(c *gin.Context) {
+		rest.HandleIndividualUser(c, db)
+	})
 	r.Run(":8082")
 }
