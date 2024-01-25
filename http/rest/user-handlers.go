@@ -1,7 +1,9 @@
 package rest
 
 import (
+	"database/sql"
 	"net/http"
+	"strconv"
 
 	"github.com/ghargrove/pokemon-web/internal"
 	"github.com/ghargrove/pokemon-web/internal/models"
@@ -25,17 +27,45 @@ func (e KidNotFound) Error() string {
 	return e.Message
 }
 
+type KidQueryResult struct {
+	Id          int            `json:"id"`
+	Name        string         `json:"name"`
+	CardId      sql.NullInt64  `json:"card_id" db:"card_id"`
+	TcgId       sql.NullString `json:"tcg_id" db:"tcg_id"`
+	PokemonName sql.NullString `json:"pokemon_name" db:"pokemon_name"`
+}
+
 // Retrieve a user for the provided id
 func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
-	var result models.Kid
+	query := `
+		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, p.name AS pokemon_name
+		FROM kids AS k
+		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
+		LEFT JOIN cards AS c ON ck.card_id = c.id
+		LEFT JOIN pokemon AS p ON c.pokemon_id = p.id
+		WHERE k.id = $1
+	`
 
-	db.Get(&result, "SELECT id, name FROM kids WHERE id = $1", id)
+	var result []KidQueryResult
+	db.Select(&result, query, id)
 
-	if result.Id == 0 {
-		return result, KidNotFound{"Kid not found"}
+	if len(result) == 0 {
+		return models.Kid{}, KidNotFound{"Kid not found"}
 	}
 
-	return result, nil
+	kid := models.Kid{Id: result[0].Id, Name: result[0].Name, Cards: []models.Card{}}
+
+	for _, k := range result {
+		if k.CardId.Valid {
+			kid.Cards = append(kid.Cards, models.Card{
+				Id:    int(k.CardId.Int64),
+				TcgId: k.TcgId.String,
+				Name:  k.PokemonName.String,
+			})
+		}
+	}
+
+	return kid, nil
 }
 
 /**
@@ -44,17 +74,49 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
  * Retrieve all kids
  */
 func HandleAllKids(c *gin.Context, db *sqlx.DB) {
-	var result []models.Kid
+	var results []KidQueryResult
 
-	db.Select(&result, "SELECT id, name FROM kids")
+	query := `
+		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, p.name AS pokemon_name
+		FROM kids AS k
+		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
+		LEFT JOIN cards AS c ON ck.card_id = c.id
+		LEFT JOIN pokemon AS p ON c.pokemon_id = p.id
+	`
 
-	// Map the values in pointers
-	var users []*models.Kid
-	for _, user := range result {
-		users = append(users, &user)
+	db.Select(&results, query)
+
+	// Store the users by their id into a map
+	kidMap := make(map[string]*models.Kid)
+	for _, result := range results {
+		kid, kidExists := kidMap[strconv.Itoa(result.Id)]
+		// If we don't have a kid already the create it and add it to the map
+		if !kidExists {
+			kid = &models.Kid{
+				Id:    result.Id,
+				Name:  result.Name,
+				Cards: []models.Card{},
+			}
+
+			kidMap[strconv.Itoa(kid.Id)] = kid
+		}
+
+		if result.CardId.Valid {
+			kid.Cards = append(kid.Cards, models.Card{
+				Id:    int(result.CardId.Int64),
+				TcgId: result.TcgId.String,
+				Name:  result.PokemonName.String,
+			})
+		}
 	}
 
-	c.JSON(http.StatusOK, AllKidsResponse{users})
+	// Map the values in pointers
+	var kids []*models.Kid
+	for _, kid := range kidMap {
+		kids = append(kids, kid)
+	}
+
+	c.JSON(http.StatusOK, AllKidsResponse{kids})
 }
 
 /**
@@ -108,10 +170,6 @@ func CreateKidCard(c *gin.Context, db *sqlx.DB) {
 
 		return
 	}
-
-	// TODO: Create a `pokemon` if one doesnt exist
-	// TODO: Create a `card` and associate it with a Pokemon
-	// TODO: Associate the `card` with the user
 
 	// If the pokemon doesn't exist we'll need to create it
 	var pokemon models.Pokemon
