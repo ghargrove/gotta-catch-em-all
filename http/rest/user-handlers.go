@@ -57,10 +57,16 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 
 	for _, k := range result {
 		if k.CardId.Valid {
+			card, err := internal.ApiClient.GetCardByID(k.TcgId.String)
+			if err != nil {
+				return models.Kid{}, KidNotFound{"Error retrieving card data"}
+			}
+
 			kid.Cards = append(kid.Cards, models.Card{
 				Id:    int(k.CardId.Int64),
 				TcgId: k.TcgId.String,
 				Name:  k.PokemonName.String,
+				Price: *card.TCGPlayer.Prices.Normal,
 			})
 		}
 	}
@@ -102,10 +108,21 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 		}
 
 		if result.CardId.Valid {
+
+			card, err := internal.ApiClient.GetCardByID(result.TcgId.String)
+			if err != nil {
+				c.AbortWithStatus(http.StatusBadRequest)
+
+				return
+			}
+
+			normalPrices := *card.TCGPlayer.Prices.Normal
+
 			kid.Cards = append(kid.Cards, models.Card{
 				Id:    int(result.CardId.Int64),
 				TcgId: result.TcgId.String,
 				Name:  result.PokemonName.String,
+				Price: normalPrices,
 			})
 		}
 	}
