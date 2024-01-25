@@ -16,7 +16,7 @@ type AllKidsResponse struct {
 }
 
 type SingleKidResponse struct {
-	User *models.Kid `json:"kid"`
+	Kid *models.Kid `json:"kid"`
 }
 
 type KidNotFound struct {
@@ -35,7 +35,7 @@ type KidQueryResult struct {
 	PokemonName sql.NullString `json:"pokemon_name" db:"pokemon_name"`
 }
 
-// Retrieve a user for the provided id
+// Retrieve a kid for the provided id
 func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 	query := `
 		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, p.name AS pokemon_name
@@ -86,7 +86,7 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 
 	db.Select(&results, query)
 
-	// Store the users by their id into a map
+	// Store the kids by their id into a map
 	kidMap := make(map[string]*models.Kid)
 	for _, result := range results {
 		kid, kidExists := kidMap[strconv.Itoa(result.Id)]
@@ -125,16 +125,16 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
  * Retrieve an individual kid
  */
 func HandleIndividualKid(c *gin.Context, db *sqlx.DB) {
-	user, err := queryKidById(db, c.Param("id"))
+	kid, err := queryKidById(db, c.Param("id"))
 
-	// Return a 404 if the user doesn't exist
+	// Return a 404 if the kid doesn't exist
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 
 		return
 	}
 
-	c.JSON(http.StatusOK, SingleKidResponse{&user})
+	c.JSON(http.StatusOK, SingleKidResponse{&kid})
 }
 
 type CreateCardParams struct {
@@ -146,7 +146,9 @@ type CreateCardResponse struct {
 }
 
 /**
- * HTTP POST /api/kids/:user_id/cards/:tcg_id
+ * HTTP POST /api/kids/:id/cards
+ * { "card_id": "sv4-1" }
+ *
  */
 func CreateKidCard(c *gin.Context, db *sqlx.DB) {
 	var json CreateCardParams
@@ -157,7 +159,7 @@ func CreateKidCard(c *gin.Context, db *sqlx.DB) {
 		return
 	}
 
-	user, err := queryKidById(db, c.Param("id"))
+	kid, err := queryKidById(db, c.Param("id"))
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 
@@ -210,7 +212,7 @@ func CreateKidCard(c *gin.Context, db *sqlx.DB) {
 	_, err = db.NamedExec("INSERT INTO cards_kids (card_id, kid_id) VALUES (:cardId, :kidId)",
 		map[string]interface{}{
 			"cardId": cardId,
-			"kidId":  user.Id,
+			"kidId":  kid.Id,
 		})
 
 	if err != nil {
