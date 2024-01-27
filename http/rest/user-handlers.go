@@ -32,13 +32,16 @@ type KidQueryResult struct {
 	Name        string         `json:"name"`
 	CardId      sql.NullInt64  `json:"card_id" db:"card_id"`
 	TcgId       sql.NullString `json:"tcg_id" db:"tcg_id"`
+	Kind        string         `json:"kind"`
 	PokemonName sql.NullString `json:"pokemon_name" db:"pokemon_name"`
 }
+
+/** Get the correct value struct based on the card type */
 
 // Retrieve a kid for the provided id
 func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 	query := `
-		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, p.name AS pokemon_name
+		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
 		FROM kids AS k
 		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
 		LEFT JOIN cards AS c ON ck.card_id = c.id
@@ -62,12 +65,23 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 				return models.Kid{}, KidNotFound{"Error retrieving card data"}
 			}
 
-			kid.Cards = append(kid.Cards, models.Card{
+			cardModel := models.Card{
 				Id:    int(k.CardId.Int64),
 				TcgId: k.TcgId.String,
 				Name:  k.PokemonName.String,
-				Price: *card.TCGPlayer.Prices.Normal,
-			})
+				Kind:  k.Kind,
+			}
+
+			prices := card.TCGPlayer.Prices
+
+			cardModel.LookupValues(prices)
+			kid.Cards = append(kid.Cards, cardModel)
+
+			// Update the portfolio value
+			kid.Value.Low += cardModel.Prices.Low
+			kid.Value.Mid += cardModel.Prices.Mid
+			kid.Value.High += cardModel.Prices.High
+			kid.Value.Market += cardModel.Prices.Market
 		}
 	}
 
@@ -83,7 +97,7 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 	var results []KidQueryResult
 
 	query := `
-		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, p.name AS pokemon_name
+		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
 		FROM kids AS k
 		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
 		LEFT JOIN cards AS c ON ck.card_id = c.id
@@ -116,20 +130,31 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 				return
 			}
 
-			normalPrices := *card.TCGPlayer.Prices.Normal
-
-			kid.Cards = append(kid.Cards, models.Card{
+			cardModel := models.Card{
 				Id:    int(result.CardId.Int64),
 				TcgId: result.TcgId.String,
 				Name:  result.PokemonName.String,
-				Price: normalPrices,
-			})
+				Kind:  result.Kind,
+			}
+
+			cardModel.LookupValues(card.TCGPlayer.Prices)
+			kid.Cards = append(kid.Cards, cardModel)
 		}
 	}
 
 	// Map the values in pointers
 	var kids []*models.Kid
+
 	for _, kid := range kidMap {
+		// Add up all of the users cards
+		for _, card := range kid.Cards {
+			// Update the portfolio value
+			kid.Value.Low += card.Prices.Low
+			kid.Value.Mid += card.Prices.Mid
+			kid.Value.High += card.Prices.High
+			kid.Value.Market += card.Prices.Market
+		}
+
 		kids = append(kids, kid)
 	}
 
