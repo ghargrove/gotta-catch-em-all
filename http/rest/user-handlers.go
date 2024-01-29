@@ -199,7 +199,7 @@ type CreateCardResponse struct {
 
 /**
  * HTTP POST /api/kids/:id/cards
- * { "card_id": "sv4-1" }
+ * { "card_id": "sv4-1", "kind": "normal" }
  *
  */
 func CreateKidCard(c *gin.Context, db *sqlx.DB) {
