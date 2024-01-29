@@ -32,16 +32,13 @@ type KidQueryResult struct {
 	Name        string         `json:"name"`
 	CardId      sql.NullInt64  `json:"card_id" db:"card_id"`
 	TcgId       sql.NullString `json:"tcg_id" db:"tcg_id"`
-	Kind        string         `json:"kind"`
 	PokemonName sql.NullString `json:"pokemon_name" db:"pokemon_name"`
 }
-
-/** Get the correct value struct based on the card type */
 
 // Retrieve a kid for the provided id
 func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 	query := `
-		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
+		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, p.name AS pokemon_name
 		FROM kids AS k
 		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
 		LEFT JOIN cards AS c ON ck.card_id = c.id
@@ -60,28 +57,11 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 
 	for _, k := range result {
 		if k.CardId.Valid {
-			card, err := internal.ApiClient.GetCardByID(k.TcgId.String)
-			if err != nil {
-				return models.Kid{}, KidNotFound{"Error retrieving card data"}
-			}
-
-			cardModel := models.Card{
+			kid.Cards = append(kid.Cards, models.Card{
 				Id:    int(k.CardId.Int64),
 				TcgId: k.TcgId.String,
 				Name:  k.PokemonName.String,
-				Kind:  k.Kind,
-			}
-
-			prices := card.TCGPlayer.Prices
-
-			cardModel.LookupValues(prices)
-			kid.Cards = append(kid.Cards, cardModel)
-
-			// Update the portfolio value
-			kid.Value.Low += cardModel.Prices.Low
-			kid.Value.Mid += cardModel.Prices.Mid
-			kid.Value.High += cardModel.Prices.High
-			kid.Value.Market += cardModel.Prices.Market
+			})
 		}
 	}
 
@@ -97,7 +77,7 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 	var results []KidQueryResult
 
 	query := `
-		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
+		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, p.name AS pokemon_name
 		FROM kids AS k
 		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
 		LEFT JOIN cards AS c ON ck.card_id = c.id
@@ -122,39 +102,17 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 		}
 
 		if result.CardId.Valid {
-
-			card, err := internal.ApiClient.GetCardByID(result.TcgId.String)
-			if err != nil {
-				c.AbortWithStatus(http.StatusBadRequest)
-
-				return
-			}
-
-			cardModel := models.Card{
+			kid.Cards = append(kid.Cards, models.Card{
 				Id:    int(result.CardId.Int64),
 				TcgId: result.TcgId.String,
 				Name:  result.PokemonName.String,
-				Kind:  result.Kind,
-			}
-
-			cardModel.LookupValues(card.TCGPlayer.Prices)
-			kid.Cards = append(kid.Cards, cardModel)
+			})
 		}
 	}
 
 	// Map the values in pointers
 	var kids []*models.Kid
-
 	for _, kid := range kidMap {
-		// Add up all of the users cards
-		for _, card := range kid.Cards {
-			// Update the portfolio value
-			kid.Value.Low += card.Prices.Low
-			kid.Value.Mid += card.Prices.Mid
-			kid.Value.High += card.Prices.High
-			kid.Value.Market += card.Prices.Market
-		}
-
 		kids = append(kids, kid)
 	}
 
@@ -179,18 +137,8 @@ func HandleIndividualKid(c *gin.Context, db *sqlx.DB) {
 	c.JSON(http.StatusOK, SingleKidResponse{&kid})
 }
 
-// Reprsents the kind of card (normal, holofoil, reverse holo)
-type CardKind string
-
-const (
-	KindHolofoil        CardKind = "holofoil"
-	KindReverseHolofoil CardKind = "reverse-holofoil"
-	KindNormal          CardKind = "normal"
-)
-
 type CreateCardParams struct {
-	CardId string   `json:"card_id" binding:"required"`
-	Kind   CardKind `binding:"required"`
+	CardId string `json:"card_id" binding:"required"`
 }
 
 type CreateCardResponse struct {
@@ -199,7 +147,7 @@ type CreateCardResponse struct {
 
 /**
  * HTTP POST /api/kids/:id/cards
- * { "card_id": "sv4-1", "kind": "normal" }
+ * { "card_id": "sv4-1" }
  *
  */
 func CreateKidCard(c *gin.Context, db *sqlx.DB) {
@@ -241,7 +189,7 @@ func CreateKidCard(c *gin.Context, db *sqlx.DB) {
 
 	db.Get(&pokemon, "SELECT id, name FROM pokemon WHERE name = $1", card.Name)
 
-	stmt, err := db.PrepareNamed("INSERT INTO cards (tcg_id, kind, pokemon_id) VALUES (:tcgId, :kind, :pokemonId) RETURNING id")
+	stmt, err := db.PrepareNamed("INSERT INTO cards (tcg_id, pokemon_id) VALUES (:tcgId, :pokemonId) RETURNING id")
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -252,7 +200,6 @@ func CreateKidCard(c *gin.Context, db *sqlx.DB) {
 	var cardId int
 	err = stmt.Get(&cardId, map[string]interface{}{
 		"tcgId":     card.ID,
-		"kind":      json.Kind,
 		"pokemonId": pokemon.Id,
 	})
 
@@ -275,8 +222,7 @@ func CreateKidCard(c *gin.Context, db *sqlx.DB) {
 	}
 
 	var cardModel models.Card
-	err = db.Get(&cardModel, "SELECT c.id, c.kind, c.tcg_id, p.name FROM cards AS c JOIN pokemon AS p ON c.pokemon_id = p.id WHERE c.id = $1", cardId)
-	cardModel.LookupValues(card.TCGPlayer.Prices)
+	err = db.Get(&cardModel, "SELECT c.id, c.tcg_id, p.name FROM cards AS c JOIN pokemon AS p ON c.pokemon_id = p.id WHERE c.id = $1", cardId)
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
