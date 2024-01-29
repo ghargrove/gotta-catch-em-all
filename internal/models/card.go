@@ -23,6 +23,8 @@ func (card *Card) LookupValues(prices TCGPlayerPrices) {
 	}
 }
 
+// Note: I don't know why I can't use *Value here. Need to figure
+// out why I have to declare them the long way...
 type TCGPlayerPrices struct {
 	Holofoil *struct {
 		Low    float64 `json:"low"`
