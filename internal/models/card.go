@@ -8,8 +8,7 @@ type Card struct {
 	Prices Value  `json:"prices"`
 }
 
-// type F tcg
-
+/** Find the prices for the card based on its kind (normal, holo, etc) */
 func (card *Card) LookupValues(prices TCGPlayerPrices) {
 	if card.Kind == "normal" && prices.Normal != nil {
 		card.Prices = *prices.Normal
