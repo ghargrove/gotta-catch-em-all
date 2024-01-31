@@ -10,6 +10,8 @@ import (
 	"github.com/ghargrove/pokemon-web/internal"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
+	"fmt"
 )
 
 func main() {
@@ -21,6 +23,8 @@ func main() {
 	}
 	// The directory we can use to absolutely reference app files
 	exPath := filepath.Dir(ex)
+
+	fmt.Printf("path: %s\n", filepath.Join(exPath, ".env"))
 
 	err = godotenv.Load(filepath.Join(exPath, ".env"))
 	if err != nil {
