@@ -8,10 +8,9 @@ import (
 	"github.com/ghargrove/pokemon-web/http"
 	"github.com/ghargrove/pokemon-web/http/rest"
 	"github.com/ghargrove/pokemon-web/internal"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-
-	"fmt"
 )
 
 func main() {
@@ -23,8 +22,6 @@ func main() {
 	}
 	// The directory we can use to absolutely reference app files
 	exPath := filepath.Dir(ex)
-
-	fmt.Printf("path: %s\n", filepath.Join(exPath, ".env"))
 
 	err = godotenv.Load(filepath.Join(exPath, ".env"))
 	if err != nil {
@@ -39,18 +36,12 @@ func main() {
 	// Statically serve the compiled assets
 	r.Static("/assets", filepath.Join(exPath, "test/dist/assets"))
 
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders: []string{"Content-Type", "Origin"},
+	}))
 	r.Use(http.Intercept404AndServeReact)
-
-	r.Use(func(c *gin.Context) {
-		// If we have a 404 then serve the index page and
-		// let client side routing take over
-		if c.Writer.Status() == 404 {
-			fname := filepath.Join(exPath, "test/dist/index.html")
-
-			c.File(fname)
-			c.Abort()
-		}
-	})
 
 	r.GET("/api/sets", rest.HandleAllSets)
 	r.GET("/api/sets/:id", rest.HandleSingleSet)
