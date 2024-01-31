@@ -34,7 +34,7 @@ func main() {
 	r := gin.Default()
 
 	// Statically serve the compiled assets
-	r.Static("/assets", filepath.Join(exPath, "test/dist/assets"))
+	r.Static("/assets", filepath.Join(exPath, "frontend/dist/assets"))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://localhost:5173"},

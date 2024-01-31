@@ -22,7 +22,7 @@ func Intercept404AndServeReact(c *gin.Context) {
 	if c.Writer.Status() == 404 {
 		fname := filepath.Join(
 			filepath.Dir(ex),
-			"test/dist/index.html")
+			"frontend/dist/index.html")
 
 		c.File(fname)
 		c.Abort()
