@@ -102,6 +102,7 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
 		LEFT JOIN cards AS c ON ck.card_id = c.id
 		LEFT JOIN pokemon AS p ON c.pokemon_id = p.id
+		ORDER BY k.id ASC
 	`
 
 	db.Select(&results, query)
