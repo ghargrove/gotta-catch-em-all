@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -37,7 +38,10 @@ func main() {
 	r.Static("/assets", filepath.Join(exPath, "frontend/dist/assets"))
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:5173"},
+		AllowOrigins: []string{
+			"http://localhost:5173",
+			fmt.Sprintf("http://%s:5173", os.Getenv("LOCALHOST")),
+			"http://127.0.0.1:5173"},
 		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders: []string{"Content-Type", "Origin"},
 	}))

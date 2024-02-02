@@ -26,7 +26,8 @@ const Index: React.FC = () => {
           <Link
             className="flex border-2 border-slate-200 py-4 px-6 mr-6 rounded-md shadow-md"
             key={kid.name}
-            to={`/kids/${kid.id}`}
+            // to={`/kids/${kid.id}`}
+            to="/"
           >
             {kid.name.toLowerCase() === "rory" && (
               <img src={eevee} width={100} />
