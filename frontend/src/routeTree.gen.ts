@@ -6,6 +6,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index/route'
+import { Route as SetsSetIdImport } from './routes/sets/$setId'
 
 // Create Virtual Routes
 
@@ -23,6 +24,11 @@ const IndexRouteRoute = IndexRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index/route.lazy').then((d) => d.Route))
 
+const SetsSetIdRoute = SetsSetIdImport.update({
+  path: '/sets/$setId',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/sets/$setId.lazy').then((d) => d.Route))
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -35,6 +41,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/sets/$setId': {
+      preLoaderRoute: typeof SetsSetIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -43,4 +53,5 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexRouteRoute,
   AboutLazyRoute,
+  SetsSetIdRoute,
 ])

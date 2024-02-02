@@ -75,14 +75,13 @@ const Index: React.FC = () => {
           <h4 className="text-xl mb-4">{series}</h4>
           <div className="grid grid-cols-5 gap-6 mb-24">
             {cardSets.map((set) => (
-              <div
-                className="flex flex-col justify-center items-center h-full w-full rounded-md bg-slate-200 p-6"
-                key={set.id}
-              >
-                <img className="mb-4" src={set.images.symbol} width={30} />
-                <img className="mb-4" src={set.images.logo} width={120} />
-                <p className="text-center">{set.name}</p>
-              </div>
+              <Link key={set.id} to={`/sets/$setId`} params={{ setId: set.id }}>
+                <div className="flex flex-col justify-center items-center h-full w-full rounded-md bg-slate-200 p-6">
+                  <img className="mb-4" src={set.images.symbol} width={30} />
+                  <img className="mb-4" src={set.images.logo} width={120} />
+                  <p className="text-center">{set.name}</p>
+                </div>
+              </Link>
             ))}
           </div>
         </>
@@ -94,9 +93,6 @@ const Index: React.FC = () => {
     </div>
   );
 };
-
-62150;
-62857;
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
