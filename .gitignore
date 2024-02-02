@@ -22,3 +22,5 @@ go.work
 
 .env
 pokemon-web
+
+.DS_Store
