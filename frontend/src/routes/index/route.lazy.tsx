@@ -71,7 +71,7 @@ const Index: React.FC = () => {
       <h2 className="text-3xl pb-4 mt-16">Sets</h2>
 
       {Array.from(f.entries()).map(([series, cardSets]) => (
-        <>
+        <div key={series}>
           <h4 className="text-xl mb-4">{series}</h4>
           <div className="grid grid-cols-5 gap-6 mb-24">
             {cardSets.map((set) => (
@@ -84,7 +84,7 @@ const Index: React.FC = () => {
               </Link>
             ))}
           </div>
-        </>
+        </div>
       ))}
 
       <div>
