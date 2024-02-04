@@ -17,7 +17,7 @@ export type Card = {
   prices: Prices
 }
 
-type Kid = {
+export type Kid = {
   id: number
   name: string
   cards: Card[],
@@ -29,7 +29,7 @@ type KidsResult = {
 }
 
 export const fetchAllKids = async (): Promise<KidsResult> => {
-  return fetch('http://127.0.0.1:8082/api/kids', {
+  return fetch('http://192.168.1.146:8082/api/kids', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'

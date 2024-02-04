@@ -50,8 +50,8 @@ const Index: React.FC = () => {
           <Link
             className="flex border-2 border-slate-200 py-4 px-6 mr-6 rounded-md shadow-md"
             key={kid.name}
-            // to={`/kids/${kid.id}`}
-            to="/"
+            to={`/kids/$kidId`}
+            params={{ kidId: kid.id.toString(10) }}
           >
             {kid.name.toLowerCase() === "rory" && (
               <img src={eevee} width={100} />
@@ -79,7 +79,7 @@ const Index: React.FC = () => {
                 <div className="flex flex-col justify-center items-center h-full w-full rounded-md bg-slate-200 p-6">
                   <img className="mb-4" src={set.images.symbol} width={30} />
                   <img className="mb-4" src={set.images.logo} width={120} />
-                  <p className="text-center">{set.name}</p>
+                  <p className="text-slate-600 text-center">{set.name}</p>
                 </div>
               </Link>
             ))}

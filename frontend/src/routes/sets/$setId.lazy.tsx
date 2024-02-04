@@ -12,7 +12,7 @@ const PriceGroup: React.FC<{ kind: Card["kind"]; prices: Prices }> = (
   return (
     <div className="mt-4 bg-slate-100 rounded-md p-2">
       <div className="flex justify-between mb-2">
-        <h4>{kind}</h4>
+        <h4 className="text-slate-600">{kind}</h4>
         <div>
           <strong className="text-xl font-bold text-green-600">${prices.market}</strong>
         </div>
@@ -43,11 +43,7 @@ const PriceGroup: React.FC<{ kind: Card["kind"]; prices: Prices }> = (
 
 const SetPage: React.FC = () => {
   const { setId } = Route.useParams();
-  const { data, isLoading } = useSuspenseQuery(getSetCardsQueryOptions(setId));
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const { data } = useSuspenseQuery(getSetCardsQueryOptions(setId));
 
   return (
     <div className="container mx-auto py-8">

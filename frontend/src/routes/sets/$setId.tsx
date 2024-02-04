@@ -5,6 +5,6 @@ import { getSetCardsQueryOptions } from "../../queries/get-set-cards";
 
 export const Route = createFileRoute("/sets/$setId")({
   loader: async ({ params }) => {
-    return queryClient.ensureQueryData(getSetCardsQueryOptions(params.setId))
+    // return queryClient.ensureQueryData(getSetCardsQueryOptions(params.setId))
   }
 })

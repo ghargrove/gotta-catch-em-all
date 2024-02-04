@@ -11,6 +11,7 @@ import { Route as SetsSetIdImport } from './routes/sets/$setId'
 // Create Virtual Routes
 
 const AboutLazyImport = createFileRoute('/about')()
+const KidsKidIdLazyImport = createFileRoute('/kids/$kidId')()
 
 // Create/Update Routes
 
@@ -23,6 +24,11 @@ const IndexRouteRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index/route.lazy').then((d) => d.Route))
+
+const KidsKidIdLazyRoute = KidsKidIdLazyImport.update({
+  path: '/kids/$kidId',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/kids/$kidId.lazy').then((d) => d.Route))
 
 const SetsSetIdRoute = SetsSetIdImport.update({
   path: '/sets/$setId',
@@ -45,6 +51,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SetsSetIdImport
       parentRoute: typeof rootRoute
     }
+    '/kids/$kidId': {
+      preLoaderRoute: typeof KidsKidIdLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,4 +64,5 @@ export const routeTree = rootRoute.addChildren([
   IndexRouteRoute,
   AboutLazyRoute,
   SetsSetIdRoute,
+  KidsKidIdLazyRoute,
 ])
