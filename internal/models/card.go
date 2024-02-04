@@ -6,6 +6,15 @@ type Card struct {
 	Name   string `json:"name"`
 	Kind   string `json:"kind"`
 	Prices Value  `json:"prices"`
+	Images struct {
+		Small string `json:"small"`
+		Large string `json:"large"`
+	} `json:"images"`
+	Set struct {
+		Id     string `json:"id"`
+		Name   string `json:"name"`
+		Series string `json:"series"`
+	} `json:"set"`
 }
 
 /** Find the prices for the card based on its kind (normal, holo, etc) */

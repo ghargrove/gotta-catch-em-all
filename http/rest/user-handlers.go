@@ -66,10 +66,20 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 			}
 
 			cardModel := models.Card{
-				Id:    int(k.CardId.Int64),
-				TcgId: k.TcgId.String,
-				Name:  k.PokemonName.String,
-				Kind:  k.Kind,
+				Id:     int(k.CardId.Int64),
+				TcgId:  k.TcgId.String,
+				Name:   k.PokemonName.String,
+				Kind:   k.Kind,
+				Images: card.Images,
+				Set: struct {
+					Id     string `json:"id"`
+					Name   string `json:"name"`
+					Series string `json:"series"`
+				}{
+					Id:     card.Set.ID,
+					Name:   card.Set.Name,
+					Series: card.Set.Series,
+				},
 			}
 
 			prices := card.TCGPlayer.Prices
@@ -123,7 +133,6 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 		}
 
 		if result.CardId.Valid {
-
 			card, err := internal.ApiClient.GetCardByID(result.TcgId.String)
 			if err != nil {
 				c.AbortWithStatus(http.StatusBadRequest)
@@ -132,10 +141,11 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 			}
 
 			cardModel := models.Card{
-				Id:    int(result.CardId.Int64),
-				TcgId: result.TcgId.String,
-				Name:  result.PokemonName.String,
-				Kind:  result.Kind,
+				Id:     int(result.CardId.Int64),
+				TcgId:  result.TcgId.String,
+				Name:   result.PokemonName.String,
+				Kind:   result.Kind,
+				Images: card.Images,
 			}
 
 			cardModel.LookupValues(card.TCGPlayer.Prices)

@@ -11,6 +11,7 @@ const KidPage: React.FC = () => {
 
   return (
     <div>
+      <h2 className="text-3xl">{kid.name}</h2>
       <pre>{JSON.stringify(kid, null, 2)}</pre>
     </div>
   );
