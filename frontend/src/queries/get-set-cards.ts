@@ -26,7 +26,7 @@ type GetCardsBySetResult = {
 
 // Retrieve card
 const getCardsBySetId = async (id: string): Promise<GetCardsBySetResult> =>
-  fetch(`http://192.168.1.146:8082/api/sets/${id}/cards`, {
+  fetch(`http://127.0.0.1:8082/api/sets/${id}/cards`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

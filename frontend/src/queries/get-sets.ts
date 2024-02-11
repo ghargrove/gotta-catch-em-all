@@ -23,7 +23,7 @@ type SetsResult = {
 
 /** Get the sets */
 const fetchAllSets = async (): Promise<SetsResult> => {
-  return fetch("http://192.168.1.146:8082/api/sets", {
+  return fetch("http://127.0.0.1:8082/api/sets", {
     method: "GET",
     headers: {
       "Content-Type": "application/json"
