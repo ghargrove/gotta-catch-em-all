@@ -12,6 +12,8 @@ import (
  * side handle it without the api server returning a 404.
  *
  * This middleware looks for those http 404s and serves the index
+ *
+ * reference: https://hackandsla.sh/posts/2021-11-06-serve-spa-from-go/
  */
 func Intercept404AndServeReact(c *gin.Context) {
 	// Ignoring this error because we would have seen it already
