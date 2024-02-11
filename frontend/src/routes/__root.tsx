@@ -1,7 +1,11 @@
+import { Suspense } from "react";
+
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 import pokemonLogo from "../assets/logo.png";
+import { Layout } from "../components/Layout";
 
 export const Route = createRootRoute({
   component: () => (
@@ -14,8 +18,13 @@ export const Route = createRootRoute({
         </div>
       </div>
 
-      <Outlet />
+      <Layout>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Outlet />
+        </Suspense>
+      </Layout>
       <TanStackRouterDevtools />
+      <ReactQueryDevtools initialIsOpen={false} />
     </div>
   ),
 });

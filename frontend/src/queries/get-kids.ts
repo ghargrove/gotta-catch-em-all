@@ -1,7 +1,7 @@
 
 import { queryOptions  } from '@tanstack/react-query'
 
-type Prices = {
+export type Prices = {
   low: number
   mid: number
   high: number
@@ -9,7 +9,7 @@ type Prices = {
 }
 
 // TODO: Camelcase responses
-type Card = {
+export type Card = {
   id: number
   tcg_id: string
   name: string
@@ -17,9 +17,10 @@ type Card = {
   prices: Prices
 }
 
-type Kid = {
+export type Kid = {
   id: number
   name: string
+  avatar_id: number,
   cards: Card[],
   value: Prices
 }
