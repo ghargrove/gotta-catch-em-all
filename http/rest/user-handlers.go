@@ -30,6 +30,7 @@ func (e KidNotFound) Error() string {
 type KidQueryResult struct {
 	Id          int            `json:"id"`
 	Name        string         `json:"name"`
+	AvatarId    int            `json:"avatar_id" db:"avatar_id"`
 	CardId      sql.NullInt64  `json:"card_id" db:"card_id"`
 	TcgId       sql.NullString `json:"tcg_id" db:"tcg_id"`
 	Kind        string         `json:"kind"`
@@ -41,7 +42,7 @@ type KidQueryResult struct {
 // Retrieve a kid for the provided id
 func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 	query := `
-		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
+		SELECT k.id, k.name, k.avatar_id, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
 		FROM kids AS k
 		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
 		LEFT JOIN cards AS c ON ck.card_id = c.id
@@ -56,7 +57,12 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 		return models.Kid{}, KidNotFound{"Kid not found"}
 	}
 
-	kid := models.Kid{Id: result[0].Id, Name: result[0].Name, Cards: []models.Card{}}
+	kid := models.Kid{
+		Id:       result[0].Id,
+		Name:     result[0].Name,
+		AvatarId: result[0].AvatarId,
+		Cards:    []models.Card{},
+	}
 
 	for _, k := range result {
 		if k.CardId.Valid {
@@ -107,7 +113,7 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 	var results []KidQueryResult
 
 	query := `
-		SELECT k.id, k.name, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
+		SELECT k.id, k.name, k.avatar_id, c.id AS card_id, c.tcg_id, c.kind, p.name AS pokemon_name
 		FROM kids AS k
 		LEFT JOIN cards_kids AS ck ON k.id = ck.kid_id
 		LEFT JOIN cards AS c ON ck.card_id = c.id
@@ -124,9 +130,10 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 		// If we don't have a kid already the create it and add it to the map
 		if !kidExists {
 			kid = &models.Kid{
-				Id:    result.Id,
-				Name:  result.Name,
-				Cards: []models.Card{},
+				Id:       result.Id,
+				Name:     result.Name,
+				AvatarId: result.AvatarId,
+				Cards:    []models.Card{},
 			}
 
 			kidMap[strconv.Itoa(kid.Id)] = kid

@@ -20,6 +20,7 @@ export type Card = {
 export type Kid = {
   id: number
   name: string
+  avatar_id: number,
   cards: Card[],
   value: Prices
 }

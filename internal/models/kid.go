@@ -8,8 +8,9 @@ type Value struct {
 }
 
 type Kid struct {
-	Id    int    `json:"id"`
-	Name  string `json:"name"`
-	Cards []Card `json:"cards"`
-	Value Value  `json:"value"`
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	AvatarId int    `json:"avatar_id"`
+	Cards    []Card `json:"cards"`
+	Value    Value  `json:"value"`
 }
