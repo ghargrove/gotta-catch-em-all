@@ -94,10 +94,10 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 			kid.Cards = append(kid.Cards, cardModel)
 
 			// Update the portfolio value
-			kid.Value.Low += cardModel.Prices.Low
-			kid.Value.Mid += cardModel.Prices.Mid
-			kid.Value.High += cardModel.Prices.High
-			kid.Value.Market += cardModel.Prices.Market
+			kid.Value.Low += internal.RoundFloat(cardModel.Prices.Low, 2)
+			kid.Value.Mid += internal.RoundFloat(cardModel.Prices.Mid, 2)
+			kid.Value.High += internal.RoundFloat(cardModel.Prices.High, 2)
+			kid.Value.Market += internal.RoundFloat(cardModel.Prices.Market, 2)
 		}
 	}
 
@@ -167,10 +167,10 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 		// Add up all of the users cards
 		for _, card := range kid.Cards {
 			// Update the portfolio value
-			kid.Value.Low += card.Prices.Low
-			kid.Value.Mid += card.Prices.Mid
-			kid.Value.High += card.Prices.High
-			kid.Value.Market += card.Prices.Market
+			kid.Value.Low += internal.RoundFloat(card.Prices.Low, 2)
+			kid.Value.Mid += internal.RoundFloat(card.Prices.Mid, 2)
+			kid.Value.High += internal.RoundFloat(card.Prices.High, 2)
+			kid.Value.Market += internal.RoundFloat(card.Prices.Market, 2)
 		}
 
 		kids = append(kids, kid)

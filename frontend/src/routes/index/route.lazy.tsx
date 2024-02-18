@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
+import { Currency } from "../../components/Currency";
 import { indexQueryOptions } from "../../queries/get-kids";
 import { Set, setQueryOptions } from "../../queries/get-sets";
 import pik from "../../assets/pikachu.png";
@@ -62,7 +63,7 @@ const Index: React.FC = () => {
             <div className="ml-6">
               <h4 className="text-xl">{kid.name}</h4>
               <p>Pokemon count: {kid.cards.length}</p>
-              <p>Pokemon value: ${kid.value.market}</p>
+              <p>Pokemon value: <Currency>{kid.value.market}</Currency></p>
             </div>
           </Link>
         ))}
