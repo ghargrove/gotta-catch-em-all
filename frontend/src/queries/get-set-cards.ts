@@ -16,7 +16,9 @@ type TcgPlayerPrices = {
 type TcgCard = {
   id: string;
   name: string;
+  number: string
   images: TcgCardImages;
+  rarity: string
   tcgplayer: { prices: TcgPlayerPrices };
 };
 
