@@ -1,6 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
+import { Currency } from "../../components/Currency";
 import { getSetCardsQueryOptions } from "../../queries/get-set-cards";
 import { Card, Prices } from "../../queries/get-kids";
 
@@ -14,7 +15,9 @@ const PriceGroup: React.FC<{ kind: Card["kind"]; prices: Prices }> = (
       <div className="flex justify-between mb-2">
         <h4 className="text-slate-600">{kind}</h4>
         <div>
-          <strong className="text-xl font-bold text-green-600">${prices.market}</strong>
+          <strong className="text-xl font-bold text-green-600">
+            <Currency>{prices.market}</Currency>
+          </strong>
         </div>
       </div>
       <div className="flex justify-between">
@@ -22,19 +25,25 @@ const PriceGroup: React.FC<{ kind: Card["kind"]; prices: Prices }> = (
           <div className="flex justify-center">
             <strong className="text-slate-600 font-semibold">low</strong>
           </div>
-          <p className="text-slate-500">${prices.low}</p>
+          <p className="text-slate-500">
+            <Currency>{prices.low}</Currency>
+          </p>
         </div>
         <div>
           <div className="flex justify-center">
             <strong className="text-slate-600 font-semibold">mid</strong>
           </div>
-          <p className="text-slate-500">${prices.mid}</p>
+          <p className="text-slate-500">
+            <Currency>{prices.mid}</Currency>
+          </p>
         </div>
         <div>
           <div className="flex justify-center">
             <strong className="text-slate-600 font-semibold">high</strong>
           </div>
-          <p className="text-slate-500">${prices.high}</p>
+          <p className="text-slate-500">
+            <Currency>{prices.high}</Currency>
+          </p>
         </div>
       </div>
     </div>
