@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { RarityType } from "~/components/Rarity";
 import { Prices } from "./get-kids";
 
 type TcgCardImages = {
@@ -16,9 +17,9 @@ type TcgPlayerPrices = {
 type TcgCard = {
   id: string;
   name: string;
-  number: string
+  number: string;
   images: TcgCardImages;
-  rarity: string
+  rarity: RarityType;
   tcgplayer: { prices: TcgPlayerPrices };
 };
 

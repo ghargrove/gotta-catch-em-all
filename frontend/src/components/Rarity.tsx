@@ -7,36 +7,48 @@ import specialIllustrationRare from "~/assets/set-symbols/special-illustration-r
 import uncommon from "~/assets/set-symbols/uncommon.png";
 import ultraRare from "~/assets/set-symbols/utltra_rare.png";
 
+/** Available rarity types */
+export enum RarityType {
+  Common = "Common",
+  DoubleRare = "Double Rare",
+  HyperRare = 'Hyper Rare',
+  IllustrationRare = 'Illustration Rare',
+  Rare = 'Rare',
+  SpecialIllustrationRare = 'Special Illustration Rare',
+  Uncommon = 'Uncommon',
+  UltraRare = 'Ultra Rare'
+}
+
 /**
  * A component displaying a pokemons rarity
  */
-export const Rarity: React.FC<{ rarity: string }> = (props) => {
+export const Rarity: React.FC<{ rarity: RarityType }> = (props) => {
   const { rarity } = props;
 
   let symbol: string | null = null;
   switch (rarity) {
-    case "Common":
+    case RarityType.Common:
       symbol = common;
       break;
-    case "Double Rare":
+    case RarityType.DoubleRare:
       symbol = doubleRare;
       break;
-    case "Hyper Rare":
+    case RarityType.HyperRare:
       symbol = hyperRare;
       break;
-    case "Illustration Rare":
+    case RarityType.IllustrationRare:
       symbol = illustrationRare;
       break;
-    case "Rare":
+    case RarityType.Rare:
       symbol = rare;
       break;
-    case "Special Illustration Rare":
+    case RarityType.SpecialIllustrationRare:
       symbol = specialIllustrationRare;
       break;
-    case "Uncommon":
+    case RarityType.Uncommon:
       symbol = uncommon;
       break;
-    case "Ultra Rare":
+    case RarityType.UltraRare:
       symbol = ultraRare;
       break;
   }
