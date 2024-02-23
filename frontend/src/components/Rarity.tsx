@@ -13,35 +13,38 @@ import ultraRare from "~/assets/set-symbols/utltra_rare.png";
 export const Rarity: React.FC<{ rarity: string }> = (props) => {
   const { rarity } = props;
 
-  let symbol = common;
+  let symbol: string | null = null;
   switch (rarity) {
-    case "Uncommon":
-      symbol = uncommon;
-      break;
-    case "Rare":
-      symbol = rare;
+    case "Common":
+      symbol = common;
       break;
     case "Double Rare":
       symbol = doubleRare;
       break;
-    case "Ultra Rare":
-      symbol = ultraRare;
+    case "Hyper Rare":
+      symbol = hyperRare;
       break;
     case "Illustration Rare":
       symbol = illustrationRare;
       break;
+    case "Rare":
+      symbol = rare;
+      break;
     case "Special Illustration Rare":
       symbol = specialIllustrationRare;
       break;
-    case "Hyper Rare":
-      symbol = hyperRare;
+    case "Uncommon":
+      symbol = uncommon;
+      break;
+    case "Ultra Rare":
+      symbol = ultraRare;
       break;
   }
 
   return (
     <div className="flex">
       <p className="pr-1">{rarity}</p>
-      <img src={symbol} height={24} width={24} />
+      {symbol !== null && <img src={symbol} height={24} width={24} />}
     </div>
   );
 };
