@@ -1,12 +1,11 @@
-import React, { useMemo } from "react";
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import React, { useMemo } from "react";
 
-import { Currency } from "../../components/Currency";
+import { Avatar } from "~/components/Avatar";
+import { Currency } from "~/components/Currency";
 import { indexQueryOptions } from "../../queries/get-kids";
 import { Set, setQueryOptions } from "../../queries/get-sets";
-import pik from "../../assets/pikachu.png";
-import eevee from "../../assets/eevee.png";
 
 const Index: React.FC = () => {
   const { data: setsData, isLoading: isSetsLoading } =
@@ -54,16 +53,13 @@ const Index: React.FC = () => {
             to={`/kids/$kidId`}
             params={{ kidId: kid.id.toString(10) }}
           >
-            {kid.name.toLowerCase() === "rory" && (
-              <img src={eevee} width={100} />
-            )}
-            {kid.name.toLowerCase() === "colby" && (
-              <img src={pik} width={100} />
-            )}
+            <Avatar id={kid.avatar_id} />
             <div className="ml-6">
               <h4 className="text-xl">{kid.name}</h4>
               <p>Pokemon count: {kid.cards.length}</p>
-              <p>Pokemon value: <Currency>{kid.value.market}</Currency></p>
+              <p>
+                Pokemon value: <Currency>{kid.value.market}</Currency>
+              </p>
             </div>
           </Link>
         ))}
