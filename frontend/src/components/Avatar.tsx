@@ -1,6 +1,7 @@
-import pikachu from "~/assets/pikachu.png";
-import eevee from "~/assets/eevee.png";
+import bulbasaur from "~/assets/bulbasaur.png";
 import charmander from "~/assets/charmander.png";
+import eevee from "~/assets/eevee2.png";
+import pikachu from "~/assets/pikachu2.png";
 import pokeball from "~/assets/pokeball.png";
 
 /**
@@ -19,6 +20,9 @@ export const Avatar: React.FC<{ id: number }> = (props) => {
       avatar = pikachu;
       break;
     case 3:
+      avatar = bulbasaur;
+      break;
+    case 4:
       avatar = charmander;
       break;
   }
