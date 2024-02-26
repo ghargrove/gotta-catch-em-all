@@ -5,7 +5,7 @@ import { useLocalStorage } from "~/hooks/useLocalStorage";
 import { indexQueryOptions, Kid } from "~/queries/get-kids";
 
 /** Context used to provide the currently authenticated kid */
-const KidContext = React.createContext<undefined | null | Kid>(undefined);
+export const KidContext = React.createContext<undefined | null | Kid>(undefined);
 
 /** Provide the authentication user */
 export const AuthenticationProvider: React.FC<React.PropsWithChildren> = (
