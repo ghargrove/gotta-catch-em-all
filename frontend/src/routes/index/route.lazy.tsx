@@ -53,7 +53,7 @@ const Index: React.FC = () => {
             to={`/kids/$kidId`}
             params={{ kidId: kid.id.toString(10) }}
           >
-            <Avatar id={kid.avatar_id} />
+            <Avatar avatarId={kid.avatar_id} />
             <div className="ml-6">
               <h4 className="text-xl">{kid.name}</h4>
               <p>Pokemon count: {kid.cards.length}</p>

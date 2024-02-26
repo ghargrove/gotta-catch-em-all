@@ -1,22 +1,16 @@
 import { Suspense } from "react";
 
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
-import pokemonLogo from "../assets/logo.png";
-import { Layout } from "../components/Layout";
+import { Layout } from "~/components/Layout";
+import { Navbar } from "~/components/Navbar";
 
 export const Route = createRootRoute({
   component: () => (
     <div>
-      <div className="bg-blue-100 py-6">
-        <div className="container mx-auto">
-          <Link to="/">
-            <img src={pokemonLogo} width={200} />
-          </Link>
-        </div>
-      </div>
+      <Navbar />
 
       <Layout>
         <Suspense fallback={<div>Loading...</div>}>

@@ -4,10 +4,51 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      .overlay {
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.4);
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+      }
+
+      .dialog {
+        background-color: #efefef;
+        border-radius: 16px;
+        box-sizing: border-box;
+        padding: 4rem;
+        
+        @media (max-width: 800px) {
+          min-width: 95%;
+        }
+        @include breakpoints.screen-sm {
+          max-width: 445px;
+        }
+        @include breakpoints.screen-md {
+          max-width: 460px;
+        }
+        @include breakpoints.screen-lg {
+          max-width: 595px;
+        }
+        @include breakpoints.screen-xl {
+          max-width: 720px;
+        }
+        @include breakpoints.screen-xxl {
+          max-width: 840px;
+        }
+      }
+    </style>
     <title>Vite + React + TS</title>
   </head>
   <body>
     <div id="root"></div>
+    <div id="dialog"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
