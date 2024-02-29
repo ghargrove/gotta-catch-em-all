@@ -8,12 +8,13 @@ import { useLocalStorage } from "~/hooks/useLocalStorage";
 
 type AuthenticationDialogProps = Omit<DialogProps, "children">;
 
-/** */
+/** Presents an authentication ui within a dialog */
 export const AuthenticationDialog: React.FC<AuthenticationDialogProps> = (
   props
 ) => {
-  const { onClose } = props
+  const { onClose } = props;
 
+  const [didFail, setDidFail] = useState(false);
   const [auth, setAuth] = useState({
     name: "",
     password: "",
@@ -29,9 +30,13 @@ export const AuthenticationDialog: React.FC<AuthenticationDialogProps> = (
       if (name === auth.name && password === auth.password) {
         setUserId(id);
 
-        onClose()
+        onClose();
+
+        return;
       }
     }
+
+    setDidFail(true);
   };
 
   // Update the form state
@@ -50,8 +55,15 @@ export const AuthenticationDialog: React.FC<AuthenticationDialogProps> = (
     <Dialog {...props}>
       <form>
         <div className="pb-4">
-          <h1 className="font-semibold text-lg">Sign in</h1>
+          <h1 className="dark:text-slate-700 font-semibold text-lg">Sign in</h1>
         </div>
+
+        {didFail && (
+          <div className="bg-red-100 p-2 mb-4 rounded-md">
+            <p className="text-red-700 font-semibold">Oops. Try again.</p>
+          </div>
+        )}
+
         <div className="pb-4">
           <TextField
             id="name"
