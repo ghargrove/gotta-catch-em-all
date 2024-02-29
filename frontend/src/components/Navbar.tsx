@@ -4,6 +4,7 @@ import { useState } from "react";
 import pokemonLogo from "~/assets/logo.png";
 import { Access } from "~/components/Access";
 import { AuthenticationDialog } from "~/components/AuthenticationDialog";
+import { Avatar } from "~/components/Avatar";
 import { Button } from "~/components/Button";
 import { useLocalStorage } from "~/hooks/useLocalStorage";
 
@@ -40,9 +41,23 @@ export const Navbar: React.FC = () => {
           <Access guard>
             {(kid) => (
               <div className="flex">
-                <span className="font-semibold">{kid.name}</span>
-                <span className="px-4">|</span>
-                <button className="font-semibold" onClick={handleSignOutPress}>
+                <Link
+                  className="hover:underline"
+                  to="/kids/$kidId"
+                  params={{ kidId: kid.id.toString() }}
+                >
+                  <div className="flex items-center">
+                    <div className="mr-4 w-12 rounded-full overflow-hidden bg-gray-100">
+                      <Avatar avatarId={kid.avatar_id} />
+                    </div>
+                    <span className="font-semibold">{kid.name}</span>
+                  </div>
+                </Link>
+                <span className="px-4 self-center">|</span>
+                <button
+                  className="font-semibold hover:underline"
+                  onClick={handleSignOutPress}
+                >
                   Sign out
                 </button>
               </div>
