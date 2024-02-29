@@ -5,7 +5,9 @@ import { useLocalStorage } from "~/hooks/useLocalStorage";
 import { indexQueryOptions, Kid } from "~/queries/get-kids";
 
 /** Context used to provide the currently authenticated kid */
-export const KidContext = React.createContext<undefined | null | Kid>(undefined);
+export const KidContext = React.createContext<undefined | null | Kid>(
+  undefined
+);
 
 /** Provide the authentication user */
 export const AuthenticationProvider: React.FC<React.PropsWithChildren> = (
@@ -13,7 +15,7 @@ export const AuthenticationProvider: React.FC<React.PropsWithChildren> = (
 ) => {
   const { children } = props;
   const { data } = useQuery(indexQueryOptions);
-  const [kidId] = useLocalStorage<null | number>("user-id", null);
+  const [kidId] = useLocalStorage<number>("user-id");
 
   // If a kid id has been persisted to local storage then attempt
   // to find them

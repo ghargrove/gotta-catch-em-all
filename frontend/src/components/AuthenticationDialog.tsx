@@ -1,9 +1,9 @@
 import { useState } from "react";
 
+import credentials from "~/auth.json";
 import { Button } from "~/components/Button";
 import { Dialog, DialogProps } from "~/components/Dialog";
 import { PasswordField, TextField } from "~/components/Form";
-import credentials from "~/auth.json";
 import { useLocalStorage } from "~/hooks/useLocalStorage";
 
 type AuthenticationDialogProps = Omit<DialogProps, "children">;
@@ -17,7 +17,7 @@ export const AuthenticationDialog: React.FC<AuthenticationDialogProps> = (
     password: "",
   });
 
-  const [_, setUserId] = useLocalStorage<null | number>('user-id', null)
+  const [_, setUserId] = useLocalStorage<number>("user-id");
 
   const authenticateUser: React.MouseEventHandler = (e) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ export const AuthenticationDialog: React.FC<AuthenticationDialogProps> = (
     for (const { id, name, password } of credentials) {
       // Check the list of credentials && store the authenticated id
       if (name === auth.name && password === auth.password) {
-        setUserId(id)
+        setUserId(id);
       }
     }
   };
