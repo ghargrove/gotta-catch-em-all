@@ -33,7 +33,7 @@ type KidQueryResult struct {
 	AvatarId    int            `json:"avatar_id" db:"avatar_id"`
 	CardId      sql.NullInt64  `json:"card_id" db:"card_id"`
 	TcgId       sql.NullString `json:"tcg_id" db:"tcg_id"`
-	Kind        string         `json:"kind"`
+	Kind        sql.NullString `json:"kind"`
 	PokemonName sql.NullString `json:"pokemon_name" db:"pokemon_name"`
 }
 
@@ -50,21 +50,35 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 		WHERE k.id = $1
 	`
 
-	var result []KidQueryResult
-	db.Select(&result, query, id)
+	results := []KidQueryResult{}
+	queryResult := KidQueryResult{}
 
-	if len(result) == 0 {
+	rows, err := db.Queryx(query, id)
+	if err != nil {
+		return models.Kid{}, KidNotFound{"Kids query failed"}
+	}
+
+	for rows.Next() {
+		err := rows.StructScan(&queryResult)
+		if err != nil {
+			return models.Kid{}, KidNotFound{"Kid failed to decode"}
+		}
+
+		results = append(results, queryResult)
+	}
+
+	if len(results) == 0 {
 		return models.Kid{}, KidNotFound{"Kid not found"}
 	}
 
 	kid := models.Kid{
-		Id:       result[0].Id,
-		Name:     result[0].Name,
-		AvatarId: result[0].AvatarId,
+		Id:       results[0].Id,
+		Name:     results[0].Name,
+		AvatarId: results[0].AvatarId,
 		Cards:    []models.Card{},
 	}
 
-	for _, k := range result {
+	for _, k := range results {
 		if k.CardId.Valid {
 			card, err := internal.ApiClient.GetCardByID(k.TcgId.String)
 			if err != nil {
@@ -75,7 +89,7 @@ func queryKidById(db *sqlx.DB, id string) (models.Kid, error) {
 				Id:     int(k.CardId.Int64),
 				TcgId:  k.TcgId.String,
 				Name:   k.PokemonName.String,
-				Kind:   k.Kind,
+				Kind:   k.Kind.String,
 				Images: card.Images,
 				Set: struct {
 					Id     string `json:"id"`
@@ -121,7 +135,24 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 		ORDER BY k.id ASC
 	`
 
-	db.Select(&results, query)
+	rows, err := db.Queryx(query)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+
+		return
+	}
+
+	queryResult := KidQueryResult{}
+	for rows.Next() {
+		err := rows.StructScan(&queryResult)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+
+			return
+		}
+
+		results = append(results, queryResult)
+	}
 
 	// Store the kids by their id into a map
 	kidMap := make(map[string]*models.Kid)
@@ -151,7 +182,7 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 				Id:     int(result.CardId.Int64),
 				TcgId:  result.TcgId.String,
 				Name:   result.PokemonName.String,
-				Kind:   result.Kind,
+				Kind:   result.Kind.String,
 				Images: card.Images,
 			}
 

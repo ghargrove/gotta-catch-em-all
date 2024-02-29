@@ -18,7 +18,12 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": "./",
+    "paths": {                                      /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+      "~/*": ["src/*"],
+    }, 
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
