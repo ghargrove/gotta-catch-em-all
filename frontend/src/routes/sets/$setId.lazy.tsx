@@ -1,10 +1,13 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import { Currency } from "../../components/Currency";
+import { Currency } from "~/components/Currency";
 import { Rarity } from "~/components/Rarity";
-import { getSetCardsQueryOptions } from "../../queries/get-set-cards";
-import { Card, Prices } from "../../queries/get-kids";
+
+import { useAuthenticatedKid } from "~/hooks/useAuthenticatedKid";
+import { getSetCardsQueryOptions } from "~/queries/get-set-cards";
+import { Prices } from "~/queries/get-kids";
 
 const PriceGroup: React.FC<{ kind: Card["kind"]; prices: Prices }> = (
   props
@@ -59,6 +62,28 @@ const SetPage: React.FC = () => {
   const { setId } = Route.useParams();
   const { data } = useSuspenseQuery(getSetCardsQueryOptions(setId));
 
+  const kid = useAuthenticatedKid();
+  const cards = kid?.cards;
+
+  const ownedCards = useMemo(() => {
+    if (cards === undefined) {
+      return {};
+    }
+
+    return cards.reduce<{ [index: string]: string[] }>((memo, card) => {
+      const { kind, set, tcg_id: id } = card;
+
+      if (set.id !== setId) {
+        return memo;
+      }
+
+      return {
+        ...memo,
+        [id]: [...(memo[id] !== undefined ? memo[id] : []), kind],
+      };
+    }, {});
+  }, [cards, setId]);
+
   return (
     <div className="container mx-auto py-8">
       <div className="grid grid-cols-4 gap-6">
@@ -84,6 +109,9 @@ const SetPage: React.FC = () => {
                 <p className="text-slate-700 text-2xl font-semibold mt-4">
                   {card.name}
                 </p>
+                
+                {/* TODO: Make a better ui for identifying owned cards */}
+                { Object.keys(ownedCards).includes(card.id) && <p>OWNED: {ownedCards[card.id]}</p> }
                 {normal !== undefined && (
                   <PriceGroup kind="normal" prices={normal} />
                 )}
