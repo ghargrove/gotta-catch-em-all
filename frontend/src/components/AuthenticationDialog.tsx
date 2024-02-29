@@ -12,6 +12,8 @@ type AuthenticationDialogProps = Omit<DialogProps, "children">;
 export const AuthenticationDialog: React.FC<AuthenticationDialogProps> = (
   props
 ) => {
+  const { onClose } = props
+
   const [auth, setAuth] = useState({
     name: "",
     password: "",
@@ -26,6 +28,8 @@ export const AuthenticationDialog: React.FC<AuthenticationDialogProps> = (
       // Check the list of credentials && store the authenticated id
       if (name === auth.name && password === auth.password) {
         setUserId(id);
+
+        onClose()
       }
     }
   };
