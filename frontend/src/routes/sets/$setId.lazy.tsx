@@ -7,9 +7,15 @@ import { Rarity } from "~/components/Rarity";
 
 import { useAuthenticatedKid } from "~/hooks/useAuthenticatedKid";
 import { getSetCardsQueryOptions } from "~/queries/get-set-cards";
-import { Prices } from "~/queries/get-kids";
+import { Card, Prices } from "~/queries/get-kids";
 
-const PriceGroup: React.FC<{ kind: Card["kind"]; prices: Prices }> = (
+type PriceGroupsProps = {
+  kind: Card["kind"];
+  prices: Prices
+  // ownedBy
+}
+
+const PriceGroup: React.FC<PriceGroupsProps> = (
   props
 ) => {
   const { kind, prices } = props;
@@ -65,6 +71,7 @@ const SetPage: React.FC = () => {
   const kid = useAuthenticatedKid();
   const cards = kid?.cards;
 
+  // Map the cards owned by this user
   const ownedCards = useMemo(() => {
     if (cards === undefined) {
       return {};

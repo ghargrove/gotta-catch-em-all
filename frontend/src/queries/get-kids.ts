@@ -64,7 +64,7 @@ export const fetchAllKids = async (): Promise<KidsResult> => {
   });
 };
 
-export const indexQueryOptions = queryOptions<KidsResult>({
+export const kidsQueryOptions = queryOptions<KidsResult>({
   queryKey: ["kids"],
   queryFn: () => {
     return fetchAllKids();
