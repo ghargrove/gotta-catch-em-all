@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useMemo } from "react";
 
 import { useLocalStorage } from "~/hooks/useLocalStorage";
-import { indexQueryOptions, Kid } from "~/queries/get-kids";
+import { kidsQueryOptions, Kid } from "~/queries/get-kids";
 
 /** Context used to provide the currently authenticated kid */
 export const KidContext = React.createContext<undefined | null | Kid>(
@@ -14,7 +14,7 @@ export const AuthenticationProvider: React.FC<React.PropsWithChildren> = (
   props
 ) => {
   const { children } = props;
-  const { data } = useQuery(indexQueryOptions);
+  const { data } = useQuery(kidsQueryOptions);
   const [kidId] = useLocalStorage<number>("user-id");
 
   // If a kid id has been persisted to local storage then attempt

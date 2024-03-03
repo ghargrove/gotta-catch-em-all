@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { queryClient } from "../../query-client";
-import { indexQueryOptions } from "../../queries/get-kids";
+import { kidsQueryOptions } from "../../queries/get-kids";
 
 export const Route = createFileRoute("/")({
-  loader: () => queryClient.ensureQueryData(indexQueryOptions),
+  loader: () => queryClient.ensureQueryData(kidsQueryOptions),
 });
