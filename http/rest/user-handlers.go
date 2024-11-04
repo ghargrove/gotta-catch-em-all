@@ -184,6 +184,15 @@ func HandleAllKids(c *gin.Context, db *sqlx.DB) {
 				Name:   result.PokemonName.String,
 				Kind:   result.Kind.String,
 				Images: card.Images,
+				Set: struct {
+					Id     string `json:"id"`
+					Name   string `json:"name"`
+					Series string `json:"series"`
+				}{
+					Id:     card.Set.ID,
+					Name:   card.Set.Name,
+					Series: card.Set.Series,
+				},
 			}
 
 			cardModel.LookupValues(card.TCGPlayer.Prices)

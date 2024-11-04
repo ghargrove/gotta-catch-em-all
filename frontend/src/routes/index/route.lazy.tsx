@@ -4,13 +4,13 @@ import React, { useMemo } from "react";
 
 import { Avatar } from "~/components/Avatar";
 import { Currency } from "~/components/Currency";
-import { indexQueryOptions } from "../../queries/get-kids";
+import { kidsQueryOptions } from "../../queries/get-kids";
 import { Set, setQueryOptions } from "../../queries/get-sets";
 
 const Index: React.FC = () => {
   const { data: setsData, isLoading: isSetsLoading } =
     useQuery(setQueryOptions);
-  const { data, isLoading } = useSuspenseQuery(indexQueryOptions);
+  const { data, isLoading } = useSuspenseQuery(kidsQueryOptions);
 
   const reversedSets = useMemo(() => {
     const copiedSets = [...(setsData?.sets ?? [])];
